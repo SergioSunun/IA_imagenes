@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño de Prompts para IA Generativa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Futuristic Neon -->
+    <!-- Application Structure Plan: He diseñado una SPA educativa con navegación por pestañas para segmentar el contenido de la lección (Introducción, Qué es un Prompt, Tipos, Comparativa y Práctica). Esta estructura no lineal permite a los estudiantes explorar libremente los conceptos. El núcleo es un "Laboratorio de Prompts" interactivo donde los usuarios pueden manipular ejemplos de prompts, lo que refuerza el aprendizaje práctico. La elección de esta estructura busca transformar un plan de clase estático en una experiencia de aprendizaje dinámica y atractiva, más acorde con el tema tecnológico. -->
+    <!-- Visualization & Content Choices: La información se presenta a través de componentes interactivos (tarjetas clicables, pestañas dinámicas) y una gráfica de radar de Chart.js. Objetivo: Organizar y Comparar. La gráfica de radar compara visualmente los cuatro tipos de prompts según sus fortalezas (Especificidad, Creatividad, Análisis, Aplicación), lo que facilita la comprensión de sus diferencias. El "Laboratorio de Prompts" permite al usuario ver cómo pequeños cambios (interacción) afectan el resultado, cumpliendo el objetivo de enseñar la importancia del detalle. Todo se implementa con HTML/CSS/JS y Chart.js (Canvas), sin usar SVG ni Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a1a;
+            color: #e0e0e0;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .glass-effect {
+            background: rgba(23, 23, 46, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(119, 79, 255, 0.3);
+        }
+        .neon-text {
+            text-shadow: 0 0 5px rgba(138, 92, 245, 0.8), 0 0 10px rgba(138, 92, 245, 0.6);
+        }
+        .neon-border {
+            border: 1px solid rgba(138, 92, 245, 0.8);
+            box-shadow: 0 0 8px rgba(138, 92, 245, 0.6), inset 0 0 8px rgba(138, 92, 245, 0.5);
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #a78bfa;
+            border-bottom-color: #a78bfa;
+            text-shadow: 0 0 3px rgba(167, 139, 250, 0.7);
+        }
+        .tab-btn.active {
+            background-color: #8a5cf5;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(138, 92, 245, 0.8);
+        }
+        .element-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 15px rgba(138, 92, 245, 0.8);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="min-h-screen bg-dots-pattern">
+        <header class="sticky top-0 z-50 glass-effect">
+            <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="font-orbitron text-xl md:text-2xl font-bold text-white neon-text">PROMPT LAB</h1>
+                    </div>
+                    <div class="hidden md:block">
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="#inicio" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300 active">Inicio</a>
+                            <a href="#que-es" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">¿Qué es?</a>
+                            <a href="#tipos" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Tipos de Prompts</a>
+                            <a href="#comparativa" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Comparativa</a>
+                            <a href="#practica" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">Práctica</a>
+                        </div>
+                    </div>
+                     <div class="md:hidden">
+                        <select id="mobile-nav" class="bg-gray-800 text-white border border-purple-500 rounded-md p-2">
+                            <option value="#inicio">Inicio</option>
+                            <option value="#que-es">¿Qué es?</option>
+                            <option value="#tipos">Tipos de Prompts</option>
+                            <option value="#comparativa">Comparativa</option>
+                            <option value="#practica">Práctica</option>
+                        </select>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+            <section id="inicio" class="page-section text-center min-h-[70vh] flex flex-col justify-center items-center">
+                <h2 class="font-orbitron text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white neon-text mb-4">Diseño de Prompts para IA Generativa</h2>
+                <p class="mt-4 text-lg md:text-xl max-w-3xl text-gray-300">Bienvenido al laboratorio interactivo. Aquí aprenderás a comunicarte con la Inteligencia Artificial. El prompt no es solo una instrucción; es el puente entre tu imaginación y la capacidad de la IA. Aprender a diseñarlo es la nueva habilidad del futuro.</p>
+                 <a href="#que-es" class="mt-8 inline-block bg-purple-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-purple-700 transition-all duration-300 shadow-lg shadow-purple-500/50">Comenzar Exploración →</a>
+            </section>
+
+            <section id="que-es" class="page-section hidden my-16">
+                 <div class="text-center mb-12">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-white neon-text">¿Qué es un Prompt?</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-gray-300">Un Prompt es la instrucción que le damos a una IA para que genere un resultado (texto, imagen, código, etc.). Un prompt efectivo se compone de varios elementos clave que guían a la IA hacia el resultado deseado.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="element-card glass-effect p-6 rounded-xl transition-all duration-300 cursor-pointer">
+                        <h3 class="font-orbitron text-xl font-bold text-purple-400 mb-2">1. Propósito/Sujeto (El Qué)</h3>
+                        <p class="text-gray-300">Define el objeto o idea principal de la generación. Es el núcleo de tu petición.</p>
+                        <p class="mt-3 text-sm text-gray-400 italic">Ej: Un auto volador, un debate sobre ética, un personaje de fantasía.</p>
+                    </div>
+                    <div class="element-card glass-effect p-6 rounded-xl transition-all duration-300 cursor-pointer">
+                        <h3 class="font-orbitron text-xl font-bold text-purple-400 mb-2">2. Estilo/Técnica (El Cómo)</h3>
+                        <p class="text-gray-300">Define la estética o la forma de ejecución. ¿Quieres una foto, una pintura, un poema?</p>
+                        <p class="mt-3 text-sm text-gray-400 italic">Ej: Estilo Cyberpunk, como una pintura al óleo, tono formal, en verso.</p>
+                    </div>
+                    <div class="element-card glass-effect p-6 rounded-xl transition-all duration-300 cursor-pointer">
+                        <h3 class="font-orbitron text-xl font-bold text-purple-400 mb-2">3. Contexto/Detalles (El Dónde)</h3>
+                        <p class="text-gray-300">Añade detalles que ambientan y refinan el resultado, creando una escena completa.</p>
+                        <p class="mt-3 text-sm text-gray-400 italic">Ej: En el año 2077, bajo una lluvia ácida, con un fondo minimalista.</p>
+                    </div>
+                    <div class="element-card glass-effect p-6 rounded-xl transition-all duration-300 cursor-pointer">
+                        <h3 class="font-orbitron text-xl font-bold text-purple-400 mb-2">4. Parámetros (Opcional)</h3>
+                        <p class="text-gray-300">Restricciones técnicas o preferencias específicas que la IA debe seguir.</p>
+                        <p class="mt-3 text-sm text-gray-400 italic">Ej: Tonos azules y morados, relación de aspecto 16:9, sin texto.</p>
+                    </div>
+                    <div class="element-card glass-effect p-6 rounded-xl transition-all duration-300 cursor-pointer">
+                        <h3 class="font-orbitron text-xl font-bold text-purple-400 mb-2">5. Público (Opcional)</h3>
+                        <p class="text-gray-300">Define a quién va dirigido el contenido, especialmente útil para la generación de texto.</p>
+                        <p class="mt-3 text-sm text-gray-400 italic">Ej: Dirigido a estudiantes, para profesionales de marketing.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tipos" class="page-section hidden my-16">
+                <div class="text-center mb-12">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-white neon-text">Laboratorio de Prompts</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-gray-300">Existen cuatro formas fundamentales de interactuar con la IA para generar contenido. Explora cada una para entender su propósito y ver cómo se construyen. Selecciona un tipo de prompt para comenzar.</p>
+                </div>
+                <div class="flex justify-center space-x-2 md:space-x-4 mb-8">
+                    <button class="tab-btn active" data-tab="producir">Producir</button>
+                    <button class="tab-btn" data-tab="explorar">Explorar</button>
+                    <button class="tab-btn" data-tab="transformar">Transformar</button>
+                    <button class="tab-btn" data-tab="describir">Describir</button>
+                </div>
+
+                <div id="prompt-content" class="glass-effect p-6 md:p-8 rounded-xl neon-border">
+                    <div class="tab-content" id="producir-content">
+                        <h3 class="font-orbitron text-2xl font-bold text-purple-400 mb-2">Producir: Creación con un Objetivo</h3>
+                        <p class="text-gray-300 mb-4">Se utiliza para crear una imagen o texto con un propósito específico y único. Es el tipo de prompt más directo: pides exactamente lo que necesitas para un fin concreto, como un anuncio, un ícono o una ilustración para un artículo.</p>
+                        <div class="bg-black/30 p-4 rounded-lg">
+                            <p class="font-mono text-purple-300" id="producir-prompt">"Un <span class="text-white">estudiante con laptop usando IA</span>, estilo <span class="text-white">futurista</span>, tonos <span class="text-white">azules y neón</span>, sentado en un <span class="text-white">aula virtual con ventanas a una ciudad voladora</span>. Detalle de <span class="text-white">iluminación cinematográfica</span>, <span class="text-white">fotografía de alta resolución</span>."</p>
+                        </div>
+                    </div>
+                    <div class="tab-content hidden" id="explorar-content">
+                        <h3 class="font-orbitron text-2xl font-bold text-purple-400 mb-2">Explorar: Búsqueda de Variaciones</h3>
+                        <p class="text-gray-300 mb-4">Ideal para la fase de lluvia de ideas. Partes de un concepto central y pides a la IA que genere múltiples variaciones artísticas, cambiando estilos, elementos o paletas de colores para encontrar la mejor dirección creativa.</p>
+                        <div class="bg-black/30 p-4 rounded-lg mb-4">
+                            <p class="font-mono text-purple-300" id="explorar-prompt">"Un cerebro con <span id="exp-el1" class="text-white">polvos de colores</span> en fondo negro, estilo <span id="exp-el2" class="text-white">surrealista</span>, variaciones en <span id="exp-el3" class="text-white">neón y metálico</span>."</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                             <button class="explore-variation-btn" data-target="base">Base</button>
+                             <button class="explore-variation-btn" data-target="v1">Variación 1 (Líneas)</button>
+                             <button class="explore-variation-btn" data-target="v2">Variación 2 (Medio)</button>
+                             <button class="explore-variation-btn" data-target="v3">Variación 3 (Color)</button>
+                        </div>
+                    </div>
+                    <div class="tab-content hidden" id="transformar-content">
+                        <h3 class="font-orbitron text-2xl font-bold text-purple-400 mb-2">Transformar: Cambio de Estilo Radical</h3>
+                         <p class="text-gray-300 mb-4">Consiste en aplicar un estilo artístico o un medio completamente diferente a un sujeto o escena. Es como "traducir" una idea de un lenguaje visual a otro, por ejemplo, convertir una foto en un personaje de anime.</p>
+                         <div class="grid md:grid-cols-2 gap-4 items-center">
+                            <div>
+                                <p class="font-bold text-gray-400">Concepto Base:</p>
+                                <p class="bg-black/30 p-3 rounded-lg font-mono text-white">Un programador frente a pantallas.</p>
+                            </div>
+                            <div class="text-center font-orbitron text-3xl text-purple-400">+</div>
+                            <div>
+                                <p class="font-bold text-gray-400">Estilo Aplicado:</p>
+                                <p class="bg-black/30 p-3 rounded-lg font-mono text-white">Estilo Cyberpunk con luces de neón.</p>
+                            </div>
+                         </div>
+                         <div class="mt-4 border-t border-purple-500/30 pt-4">
+                             <p class="font-bold text-gray-400">Prompt Resultante:</p>
+                            <p class="bg-black/30 p-4 rounded-lg font-mono text-purple-300">"Un <span class="text-white">programador frente a pantallas</span>, transformado a <span class="text-white">estilo cyberpunk</span> con <span class="text-white">luces de neón, lluvia ácida, implantes biónicos y moda techwear</span>."</p>
+                         </div>
+                    </div>
+                    <div class="tab-content hidden" id="describir-content">
+                        <h3 class="font-orbitron text-2xl font-bold text-purple-400 mb-2">Describir: Ingeniería Inversa Visual</h3>
+                        <p class="text-gray-300 mb-4">Esta técnica consiste en analizar una imagen existente para generar el prompt que podría haberla creado. Es una excelente manera de aprender qué palabras clave (keywords) funcionan para lograr ciertos estilos y efectos.</p>
+                        <p class="mb-2 font-bold text-gray-400">Análisis de una imagen de interfaz de IA:</p>
+                        <div class="bg-black/30 p-4 rounded-lg font-mono text-purple-300">
+                           <ul class="list-disc list-inside text-white">
+                               <li><span class="text-purple-300">Sujeto Principal:</span> Predicción de textos o interfaz de machine learning.</li>
+                               <li><span class="text-purple-300">Elementos Visuales:</span> Pantallas múltiples, líneas luminosas, palabras flotando.</li>
+                               <li><span class="text-purple-300">Paleta:</span> Azul eléctrico, púrpura, acentos magenta.</li>
+                               <li><span class="text-purple-300">Tono:</span> Tecnológico, limpio, con profundidad de campo y efecto bokeh.</li>
+                           </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="comparativa" class="page-section hidden my-16">
+                 <div class="text-center mb-12">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-white neon-text">Comparativa de Prompts</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-gray-300">No todos los prompts sirven para lo mismo. Esta visualización te ayuda a entender las fortalezas de cada tipo según diferentes objetivos. Úsalo como guía para decidir qué tipo de prompt usar en tus proyectos.</p>
+                </div>
+                <div class="glass-effect p-4 md:p-8 rounded-xl neon-border">
+                    <div class="chart-container" style="position: relative; height:60vh; max-height: 500px; width:100%; max-width: 600px; margin: auto;">
+                        <canvas id="promptChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="practica" class="page-section hidden my-16">
+                <div class="text-center mb-12">
+                    <h2 class="font-orbitron text-3xl md:text-4xl font-bold text-white neon-text">¡Ahora es tu Turno!</h2>
+                    <p class="mt-4 text-lg max-w-3xl mx-auto text-gray-300">La mejor forma de aprender es practicando. Aquí tienes algunas actividades para afianzar tus nuevas habilidades en la creación de prompts. ¡Desarrolla tu maestría!</p>
+                </div>
+                <div class="space-y-8">
+                    <div class="glass-effect p-6 rounded-xl neon-border">
+                        <h3 class="font-orbitron text-xl font-bold text-purple-400">Actividad 1: Producción</h3>
+                        <p class="mt-2 text-gray-300">Escribe un prompt para promocionar tu colegio en redes sociales. Incluye un propósito claro (ej. "atraer nuevos estudiantes"), un estilo visual (ej. "vibrante y moderno") y una paleta de colores específica.</p>
+                    </div>
+                    <div class="glass-effect p-6 rounded-xl neon-border">
+                        <h3 class="font-orbitron text-xl font-bold text-purple-400">Actividad 2: Exploración</h3>
+                        <p class="mt-2 text-gray-300">En parejas, redacten un prompt artístico sobre un tema libre (ej. "la amistad en el futuro"). Incluyan un estilo base y al menos 2 variaciones que cambien radicalmente la estética.</p>
+                    </div>
+                     <div class="glass-effect p-6 rounded-xl neon-border">
+                        <h3 class="font-orbitron text-xl font-bold text-purple-400">Tarea: Transformación</h3>
+                        <p class="mt-2 text-gray-300">Redacta un prompt de transformación que tome un objeto o personaje famoso y lo cambie a un estilo radicalmente opuesto. Por ejemplo: convertir a "Harry Potter" en un personaje al estilo de Studio Ghibli, o "La Monalisa" en una escultura low-poly con neón.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileNav = document.getElementById('mobile-nav');
+            const pageSections = document.querySelectorAll('.page-section');
+
+            function setActiveLink(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === targetId);
+                });
+            }
+
+            function showPage(targetId) {
+                pageSections.forEach(section => {
+                    section.classList.toggle('hidden', `#${section.id}` !== targetId);
+                });
+                setActiveLink(targetId);
+                window.scrollTo({ top: document.querySelector(targetId).offsetTop - 80, behavior: 'smooth' });
+            }
+
+            function handleNavClick(e) {
+                e.preventDefault();
+                const targetId = e.currentTarget.getAttribute('href');
+                if(document.querySelector(targetId)) {
+                   showPage(targetId);
+                }
+            }
+            
+            navLinks.forEach(link => link.addEventListener('click', handleNavClick));
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                     e.preventDefault();
+                     const targetId = this.getAttribute('href');
+                     const targetElement = document.querySelector(targetId);
+                     if (targetElement && targetElement.classList.contains('page-section')) {
+                         showPage(targetId);
+                     } else if (targetElement) {
+                         window.scrollTo({
+                             top: targetElement.offsetTop - 80,
+                             behavior: 'smooth'
+                         });
+                     }
+                });
+            });
+
+            mobileNav.addEventListener('change', (e) => {
+                 const targetId = e.target.value;
+                 if(document.querySelector(targetId)) {
+                   showPage(targetId);
+                 }
+            });
+
+
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tab = button.dataset.tab;
+                    
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                        if (content.id === `${tab}-content`) {
+                            content.classList.remove('hidden');
+                        }
+                    });
+                });
+            });
+
+            const exploreVariations = {
+                base: { el1: 'polvos de colores', el2: 'surrealista', el3: 'neón y metálico' },
+                v1: { el1: 'líneas cinéticas y circuitos dorados', el2: 'surrealista', el3: 'neón y metálico' },
+                v2: { el1: 'polvos de colores', el2: 'escultura de vidrio y cromo', el3: 'sobre pedestal oscuro' },
+                v3: { el1: 'polvos de colores', el2: 'minimalista 3D', el3: 'tonos pastel y blanco roto' },
+            };
+            const exploreVariationBtns = document.querySelectorAll('.explore-variation-btn');
+            exploreVariationBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const variation = exploreVariations[btn.dataset.target];
+                    document.getElementById('exp-el1').textContent = variation.el1;
+                    document.getElementById('exp-el2').textContent = variation.el2;
+                    document.getElementById('exp-el3').textContent = variation.el3;
+                });
+            });
+
+
+            const ctx = document.getElementById('promptChart').getContext('2d');
+            const chartData = {
+                labels: ['Producir', 'Explorar', 'Transformar', 'Describir'],
+                datasets: [{
+                    label: 'Fortalezas del Prompt',
+                    data: [5, 3, 4, 4],
+                    backgroundColor: 'rgba(138, 92, 245, 0.2)',
+                    borderColor: 'rgba(167, 139, 250, 1)',
+                    pointBackgroundColor: 'rgba(167, 139, 250, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(167, 139, 250, 1)'
+                }, {
+                    label: 'Objetivo Principal',
+                    data: [
+                        { r: 5, meta: 'Resultado Específico' },
+                        { r: 5, meta: 'Generación de Ideas' },
+                        { r: 4, meta: 'Aplicación de Estilo' },
+                        { r: 5, meta: 'Análisis y Aprendizaje' },
+                    ]
+                }]
+            };
+
+            const promptChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Especificidad', 'Creatividad', 'Aplicación', 'Análisis'],
+                    datasets: [{
+                        label: 'Producir',
+                        data: [5, 2, 3, 1],
+                        borderColor: '#8B5CF6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    }, {
+                        label: 'Explorar',
+                        data: [2, 5, 4, 2],
+                        borderColor: '#34D399',
+                        backgroundColor: 'rgba(52, 211, 153, 0.2)',
+                    }, {
+                        label: 'Transformar',
+                        data: [4, 4, 5, 3],
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                    }, {
+                        label: 'Describir',
+                        data: [1, 3, 2, 5],
+                        borderColor: '#60A5FA',
+                        backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                            pointLabels: { 
+                                font: { size: 14, family: "'Inter', sans-serif" },
+                                color: '#e0e0e0'
+                            },
+                            ticks: {
+                                backdropColor: 'rgba(0,0,0,0)',
+                                color: '#9ca3af',
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0e0e0',
+                                font: { size: 12, family: "'Inter', sans-serif" }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            showPage(window.location.hash || '#inicio');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const targetId = `#${entry.target.id}`;
+                        setActiveLink(targetId);
+                        if (mobileNav.value !== targetId) {
+                           mobileNav.value = targetId;
+                        }
+                    }
+                });
+            }, { rootMargin: "-50% 0px -50% 0px" });
+
+            pageSections.forEach(section => observer.observe(section));
+
+        });
+    </script>
+</body>
+</html>
